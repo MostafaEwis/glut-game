@@ -3,14 +3,26 @@
 #include <math.h>
 #include <time.h>
 #include <gl/glut.h>
+#include "./obstacle.cpp"
 
 using namespace std;
 //TODO: 
-//create a class for obstacles []
-//create obstacle generation []
+//create a class for obstacles [x]
+//create obstacle generation [x]
+//*** obstacles animatoin []
+//	obstacle front goes back []
+//	obstacle move forward []
+//	obstacles rotate by the keyboard[]
+//	front obstacle should be selected and controlled []
 //draw a ball where the player should be (will be fixed) [x]
 //collision detection []
 //texture []
+float Obstacle::innerRadius = 1;
+float Obstacle::outerRadius = 1.5;
+float Obstacle::thickness = 0.5;
+float Obstacle::res = 0.01;
+int Obstacle::gap = 50;
+ObstacleScene scene(6, 0, 0, -3, 2);
 void myInit(){
 	GLfloat width = 700;
 	GLfloat height = 700;
@@ -43,41 +55,6 @@ void reshape(int w, int h){
 	gluPerspective(45.0, (float) w / (float) h, 1.0f, 100.0f);
 
 }
-void obstacle(float innerRadius, float outerRadius, float thickness, float res = 0.01, int gap = 50){
-	//.		.		.		.
-	//|		|		|		|
-	//.		.		.		.		.
-	glBegin(GL_QUADS);
-	//front
-	for(float degree = 0; degree < 2 * M_PI - gap * res; degree += res){
-		glVertex3f(innerRadius * cos(degree), innerRadius* sin(degree), 0);
-		glVertex3f(outerRadius * cos(degree), outerRadius * sin(degree), 0);
-		glVertex3f(outerRadius * cos(degree + res), outerRadius * sin(degree + res), 0);
-		glVertex3f(innerRadius * cos(degree + res), innerRadius * sin(degree + res), 0);
-	}
-	//back
-	for(float degree = 0; degree < 2 * M_PI - gap * res; degree += res){
-		glVertex3f(innerRadius * cos(degree), innerRadius* sin(degree), -thickness);
-		glVertex3f(outerRadius * cos(degree), outerRadius * sin(degree), -thickness);
-		glVertex3f(outerRadius * cos(degree + res), outerRadius * sin(degree + res), -thickness);
-		glVertex3f(innerRadius * cos(degree + res), innerRadius * sin(degree + res), -thickness);
-	}
-	//gap in between inner
-	for(float degree = 0; degree < 2 * M_PI - gap * res; degree += res){
-		glVertex3f(innerRadius * cos(degree), innerRadius* sin(degree), -thickness);
-		glVertex3f(innerRadius * cos(degree), innerRadius * sin(degree), 0);
-		glVertex3f(innerRadius * cos(degree + res), innerRadius * sin(degree + res), 0);
-		glVertex3f(innerRadius * cos(degree + res), innerRadius * sin(degree + res), -thickness);
-	}
-	//gap in between outer
-	for(float degree = 0; degree < 2 * M_PI - gap * res; degree += res){
-		glVertex3f(outerRadius * cos(degree), outerRadius * sin(degree), -thickness);
-		glVertex3f(outerRadius * cos(degree), outerRadius * sin(degree), 0);
-		glVertex3f(outerRadius * cos(degree + res), outerRadius * sin(degree + res), 0);
-		glVertex3f(outerRadius * cos(degree + res), outerRadius * sin(degree + res), -thickness);
-	}
-	glEnd();
-}
 void myDisplay(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
@@ -88,9 +65,10 @@ void myDisplay(){
 		0.f, 1.f, 0.f);
 	//purple
 	glColor3f(156.f / 256, 0, 255.f/256);
-	obstacle(1, 1.5, 0.5);
-	//player
+	scene.drawScene();
 	glTranslatef(0, -4, 0);
+	//player
+	glColor3f(0, 1, 0);
 	glutSolidSphere(0.6, 50, 50);
 	glutSwapBuffers();
 }
