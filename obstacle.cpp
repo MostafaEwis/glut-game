@@ -2,41 +2,10 @@
 #include <windows.h>
 #include <math.h>
 #include <time.h>
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb.h"
 #include <gl/glut.h>
 #include <vector>
 using namespace std;
 
-unsigned int texture;
-int width, height, nrChannels;
-unsigned char *data = NULL;
-void check(unsigned char *data){
-	if (data){
-		glGenTextures(1, &texture);
-		glBindTexture(GL_TEXTURE_2D, texture);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	}
-	else{
-		std::cout << "Failed to load texture" << std::endl;
-	}
-	stbi_image_free(data);
-}
-void load (int imgnum ){
-	if(imgnum == 1){
-		data= stbi_load("wall.bmp", &width, &height, &nrChannels, 0);
-		check(data);
-	}
-	else if(imgnum == 2){
-		data= stbi_load("container.jpg", &width, &height, &nrChannels, 0);
-		check(data);
-	}
-}
 class Obstacle{
 public: 
 	static float innerRadius;
@@ -61,14 +30,9 @@ public:
 		glBegin(GL_QUADS);
 		//front
 		for(float degree = 0; degree < 2 * M_PI - gap * res; degree += res){
-			//load(1);
-			glTexCoord2d(1,1);
 			glVertex3f(innerRadius * cos(degree), innerRadius* sin(degree), 0);
-			glTexCoord2d(0,1);
 			glVertex3f(outerRadius * cos(degree), outerRadius * sin(degree), 0);
-			glTexCoord2d(0,0);
 			glVertex3f(outerRadius * cos(degree + res), outerRadius * sin(degree + res), 0);
-			glTexCoord2d(1,0);
 			glVertex3f(innerRadius * cos(degree + res), innerRadius * sin(degree + res), 0);
 		}
 		//back
